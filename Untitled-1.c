@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <conio.h>
+// #include <conio.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
@@ -121,9 +121,10 @@ int create_account()
 
     userData data;
     /* Name */
-    printf("Enter your name: ");                        
-    fflush(stdin);
-    gets(data.name);
+    char c;
+    scanf("%c", &c);
+    printf("Enter your name: ");
+    scanf("%[^\n]s", data.name);
    
     dob(&data.date, &data.month, &data.year);
     int j = age(&data.age, data.date, data.month, data.year);
@@ -140,7 +141,7 @@ int create_account()
     rand_gen(&data.ac, "1.Account number.bin", 1000000000);
     rand_gen(&data.pin, "2.PIN.bin", 1000);
 
-    printf("Your account number is: %d %03d %03d\n", data.ac/1000000, (data.ac/1000)%(data.ac/1000000), data.ac%(data.ac/1000));
+    printf("Your account number is: %d\n", data.ac);
     printf("Your PIN is: %d\n",  data.pin);
     printf("Don't forget your PIN!!!");
     
@@ -185,7 +186,6 @@ int age(int *age, int date, int month, int year)
         printf("You are not eligible to open an account!\n");
         return 1;
     }
-    free(age);
     return 0;
 }
 
@@ -216,7 +216,7 @@ userData *search(int returnValue)
 
     long offset = (account_number - 1000000000) * sizeof(userData);
     if (fseek(fpt, offset, SEEK_SET) != 0) {
-        printf("\nError: Account not found da!\n");
+        printf("\nError: Account not found!\n");
         fclose(fpt);
         free(data);
         return NULL;
@@ -271,15 +271,15 @@ int drop()
     data = search(1);
 
     printf("\n\n------Delete Account-----\n");
-    fflush(stdin);
 
     if (data != NULL && data->age != 0)
     {
         printf("\n\nAre you sure?[y/n]: ");
-        fflush(stdin);
         char c;
         scanf("%c", &c);
-        if (toupper(c) == 'Y') 
+        char confirm;
+        scanf("%c", &confirm);
+        if (toupper(confirm) == 'Y') 
         {
             file_write("Recovery file.bin", data, "ab", 0);
 
@@ -306,13 +306,14 @@ int update(int choose)
 
     if (data->age != 0 && data != NULL)
     {
+        char c;
         switch (choose)
         {
                 /* Name updation */
             case 1:
-                fflush(stdin);
+                scanf("%c", &c);
                 printf("Enter your name: ");
-                gets(data->name);
+                scanf("%[^\n]s", data->name);
                 printf("\nUpdated successfully");
                 break;
 
@@ -422,8 +423,6 @@ void rand_gen(int *store, char file_name[], int start_val)
         fseek(fpt, 0, SEEK_SET);
         fprintf(fpt, "%d", *store);
     }
-
-    free(store);
     /* Close the file */
     fclose(fpt);
 }
